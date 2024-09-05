@@ -47,6 +47,12 @@ function formatElapsed(start)
   }
 }
 
+function leadingZero(val)
+{
+  let s = val.toFixed();
+  return s.length == 1 ? '0' + s : s;
+}
+
 myAction.updateContext = function(context) {
 	if(context in this.visibleContexts)	{
 		let apitoken = this.visibleContexts[context].settings['apitoken']
