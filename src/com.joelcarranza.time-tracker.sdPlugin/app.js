@@ -17,8 +17,15 @@ myAction.onWillAppear(({ action, context, device, event, payload }) =>  {
 	myAction.updateContext(context);
 });
 
+myAction.onWillDisappear(({ action, context, device, event, payload }) =>  {
+	delete myAction.visibleContexts[context];
+});
 
 myAction.onDidReceiveSettings(({ action, context, device, event, payload }) =>  {
+	let settings = payload.settings;
+	if(context in myAction.visibleContexts) {
+		myAction.visibleContexts[context].settings = settings;
+	}
 });
 
 myAction.onKeyDown(({ action, context, device, event, payload }) => {
@@ -45,19 +52,18 @@ myAction.updateContext = function(context) {
 		let apitoken = this.visibleContexts[context].settings['apitoken']
 		if(apitoken) {
 			togglGetCurrentEntry(apitoken).then(responseData => {
-					console.log("RESULT!");
-					console.log(responseData);
-					start = responseData.start;
-					$SD.setTitle(context, formatElapsed(start));
-			});			
+				console.log("RESULT!");
+				console.log(responseData);
+				start = responseData.start;
+				$SD.setTitle(context, formatElapsed(start));
+			}).catch((e) => {
+				console.log(e);
+			});
 		}
 	}
 }
 
 myAction.update = function() {
-	console.log("update");
-	console.log(this.visibleContexts);
-
 	for (let context of Object.keys(this.visibleContexts)) {
 		this.updateContext(context);
 	}
@@ -67,7 +73,11 @@ myAction.update = function() {
 const togglBaseUrl = 'https://api.track.toggl.com/api/v9';
 
 async function togglGetCurrentEntry(apiToken) {
+	// TODO: eventually do catching here
 	console.log("togglGetCurrentEntry" + apiToken)
+	if(!apiToken) {
+		throw new Exception("No API Token provided");
+	}
 	let response = await fetch(
 	  `${togglBaseUrl}/me/time_entries/current`, {
 	  method: 'GET',
@@ -76,9 +86,27 @@ async function togglGetCurrentEntry(apiToken) {
 	  }
 	});
 	if(response.ok) {
-		return await hostEmailData.json();
+		result = await response.json();
+		project_id = result.project_id;
+		workspace_id  = result.workspace_id;
+		if(project_id) {
+			//result.project = await togglGetProject(apiToken, workspace_id, project_id);
+		}
+		return result;
 	}
 	else {
 		throw new Exception("Request failed!");
 	}
 }
+
+
+function togglGetProject(apiToken, workspaceId, projectId) {
+	return fetch(
+	  `${togglBaseUrl}/workspaces/${workspaceId}/projects/${projectId}`, {
+		method: 'GET',
+		headers: {
+		  Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
+		}
+	  });
+  }
+  
