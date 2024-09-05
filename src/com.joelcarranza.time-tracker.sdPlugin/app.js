@@ -44,19 +44,11 @@ myAction.updateContext = function(context) {
 	if(context in this.visibleContexts)	{
 		let apitoken = this.visibleContexts[context].settings['apitoken']
 		if(apitoken) {
-			togglGetCurrentEntry(apitoken).then(response => {
-				if (response.ok) {
-					response.json().then(responseData => {
-						console.log("RESULT!");
-						console.log(responseData);
-						start = responseData.start;
-						$SD.setTitle(context, formatElapsed(start));
-				});
-				}
-				else {
-					console.log("NOPE!");
-					console.log(response);
-				}
+			togglGetCurrentEntry(apitoken).then(responseData => {
+					console.log("RESULT!");
+					console.log(responseData);
+					start = responseData.start;
+					$SD.setTitle(context, formatElapsed(start));
 			});			
 		}
 	}
@@ -74,13 +66,19 @@ myAction.update = function() {
 
 const togglBaseUrl = 'https://api.track.toggl.com/api/v9';
 
-function togglGetCurrentEntry(apiToken) {
+async function togglGetCurrentEntry(apiToken) {
 	console.log("togglGetCurrentEntry" + apiToken)
-	return fetch(
+	let response = await fetch(
 	  `${togglBaseUrl}/me/time_entries/current`, {
 	  method: 'GET',
 	  headers: {
 		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
 	  }
 	});
+	if(response.ok) {
+		return await hostEmailData.json();
+	}
+	else {
+		throw new Exception("Request failed!");
+	}
 }
