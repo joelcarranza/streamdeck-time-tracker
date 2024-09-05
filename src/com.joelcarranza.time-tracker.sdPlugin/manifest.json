@@ -2,8 +2,8 @@
 	"SDKVersion": 2,
 	"Author": "Elgato Systems",
 	"CodePath": "app.html",
-	"Description": "Example description",
-	"Name": "Stream Deck Template",
+	"Description": "Time Tracker using Toggl",
+	"Name": "Time Tracker",
 	"Icon": "actions/template/assets/action",
 	"URL": "https://www.elgato.com/en/gaming/stream-deck",
 	"Version": "1.0.2",
@@ -20,29 +20,19 @@
 			"MinimumVersion": "10"
 		}
 	],
-	"Category": "Template Plugin",
+	"Category": "Time Tracker",
 	"CategoryIcon": "actions/template/assets/actionimage",
 	"Actions": [
 		{
 			"Icon": "actions/template/assets/actionimage",
-			"Name": "Example Action",
-			"Controllers": ["Keypad", "Encoder"],
-			"Encoder": {
-				"layout": "$B1",
-				"TriggerDescription": {
-					"Rotate": "Describe the rotation",
-					"Push": "Describe the encoder push",
-					"Touch": "Describe the touch",
-					"LongTouch": "Describe the long touch"
-				}
-			},
+			"Name": "Tracker",
 			"States": [
 				{
 					"Image": "actions/template/assets/action"
 				}
 			],
-			"Tooltip": "This is an example tooltip",
-			"UUID": "com.elgato.template.action",
+			"Tooltip": "Displays currently tracked time",
+			"UUID": "com.joelcarranza.time-tracker.action",
 			"PropertyInspectorPath": "actions/template/property-inspector/inspector.html"
 		}
 	]
