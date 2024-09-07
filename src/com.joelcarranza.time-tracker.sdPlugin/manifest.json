@@ -21,14 +21,14 @@
 		}
 	],
 	"Category": "Time Tracker",
-	"CategoryIcon": "actions/template/assets/actionimage",
+	"CategoryIcon": "images/play-circle-outline",
 	"Actions": [
 		{
-			"Icon": "actions/template/assets/actionimage",
+			"Icon": "images/play-circle-outline",
 			"Name": "Tracker",
 			"States": [
 				{
-					"Image": "actions/template/assets/action"
+					"Image": "images/play-circle-outline"
 				}
 			],
 			"Tooltip": "Displays currently tracked time",

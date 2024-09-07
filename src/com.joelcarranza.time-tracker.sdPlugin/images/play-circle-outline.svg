@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 24 24"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="play-circle-outline.svg"
+   xml:space="preserve"
+   inkscape:export-filename="play-circle-outline.png"
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+     id="defs8" /><sodipodi:namedview
+     id="namedview6"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="9.8333333"
+     inkscape:cx="-8.8474576"
+     inkscape:cy="20.135593"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" /><path
+     d="M 12,17.233898 C 9.1148135,17.233898 6.7661016,14.885186 6.7661016,12 6.7661016,9.1148135 9.1148135,6.7661016 12,6.7661016 c 2.885186,0 5.233898,2.3487119 5.233898,5.2338984 0,2.885186 -2.348712,5.233898 -5.233898,5.233898 M 12,5.457627 A 6.5423729,6.5423729 0 0 0 5.457627,12 6.5423729,6.5423729 0 0 0 12,18.542373 6.5423729,6.5423729 0 0 0 18.542373,12 6.5423729,6.5423729 0 0 0 12,5.457627 M 10.691525,14.944068 14.616949,12 10.691525,9.0559322 Z"
+     id="path2"
+     style="fill:#ababab;fill-opacity:1;stroke-width:0.654237" /></svg>

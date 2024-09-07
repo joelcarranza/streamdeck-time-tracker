@@ -53,6 +53,16 @@ function leadingZero(val)
   return s.length == 1 ? '0' + s : s;
 }
 
+function setDrawnImage(context, drawFunc) {
+	var canvas = document.getElementById('canvas');
+	var ctx = canvas.getContext('2d');
+	drawFunc(ctx, canvas.width, canvas.height)
+	result = $SD.setImage(
+		context,
+		canvas.toDataURL()
+	);
+}
+
 myAction.updateContext = function(context) {
 	if(context in this.visibleContexts)	{
 		let apitoken = this.visibleContexts[context].settings['apitoken']
@@ -60,8 +70,23 @@ myAction.updateContext = function(context) {
 			togglGetCurrentEntry(apitoken).then(responseData => {
 				console.log("RESULT!");
 				console.log(responseData);
-				start = responseData.start;
-				$SD.setTitle(context, formatElapsed(start));
+				if(responseData) {
+					start = responseData.start;
+					$SD.setTitle(context, formatElapsed(start));
+					setDrawnImage(context, (ctx, width, height) => {
+						ctx.fillStyle = '#ffaa00';
+						ctx.fillRect(0, 0, width, height);
+					})
+				}
+				else {
+					$SD.setTitle(context, "");
+					result = $SD.setImage(
+						context,
+						null // use default image
+						// must be image url
+						//"data:image/svg+xml;charset=utf8,<svg height=\"100\" width=\"100\"><circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"black\" stroke-width=\"3\" fill=\"red\" /></svg>",
+					);
+				}
 			}).catch((e) => {
 				console.log(e);
 			});
@@ -93,10 +118,12 @@ async function togglGetCurrentEntry(apiToken) {
 	});
 	if(response.ok) {
 		result = await response.json();
-		project_id = result.project_id;
-		workspace_id  = result.workspace_id;
-		if(project_id) {
-			//result.project = await togglGetProject(apiToken, workspace_id, project_id);
+		if(result) {
+			project_id = result.project_id;
+			workspace_id  = result.workspace_id;
+			if(project_id) {
+				//result.project = await togglGetProject(apiToken, workspace_id, project_id);
+			}
 		}
 		return result;
 	}
