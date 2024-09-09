@@ -148,9 +148,6 @@ myAction.update = function() {
 }
 
 
-const togglBaseUrl = 'https://api.track.toggl.com/api/v9';
-
-
 CURRENT_ENTRY_CACHE = {};
 
 async function togglGetCurrentEntry(apiToken) {
@@ -165,28 +162,9 @@ async function togglGetCurrentEntry(apiToken) {
 		}
 	}
 
-	let response = await fetch(
-	  `${togglBaseUrl}/me/time_entries/current`, {
-	  method: 'GET',
-	  headers: {
-		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
-	  }
-	});
-	if(response.ok) {
-		result = await response.json();
-		if(result) {
-			project_id = result.project_id;
-			workspace_id  = result.workspace_id;
-			if(project_id) {
-				result.project = await togglGetProject(apiToken, workspace_id, project_id);
-			}			
-		}
-		CURRENT_ENTRY_CACHE[apiToken] = {result, expires: Date.now() + 15000};
-		return result;
-	}
-	else {
-		throw new Error("Request failed!");
-	}
+	result = ToggleAPI.getCurrentEntry(apiToken);
+	CURRENT_ENTRY_CACHE[apiToken] = {result, expires: Date.now() + 15000};
+	return result;
 }
 
 
@@ -201,60 +179,20 @@ async function togglGetProject(apiToken, workspaceId, projectId) {
 				return e.result;
 			}
 		}
-
-		let response = await fetch(`${togglBaseUrl}/workspaces/${workspaceId}/projects/${projectId}`, {
-			method: 'GET',
-			headers: {
-			Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
-			}
-		});
-		if(response.ok) {
-			let result = await response.json();
-			PROJECT_CACHE[cacheKey] = {result, expires: Date.now() + 60*60*1000};
-			return result;
-		}
-		else {
-			throw new Error("Request failed!");
-		}
+		let result = ToggleAPI.getProject(apiToken, workspaceId, projectId);
+		PROJECT_CACHE[cacheKey] = {result, expires: Date.now() + 60*60*1000};
+		return result;
   }
   
 
 async function togglStartEntry(apiToken, workspaceId) {
-	var ts = new Date().toISOString();
-	var response = await fetch(
-	  `${togglBaseUrl}/workspaces/${workspaceId}/time_entries`, {
-	  method: 'POST',
-	  headers: {
-		'Content-Type': 'application/json',
-		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
-	  },
-	  body: JSON.stringify({
-		workspace_id: +workspaceId,
-		duration: -1, 
-		start:ts,
-		created_with: 'Stream Deck'
-	  })
-	})
-	if(response.ok) {
-		return await response.json();
-	}
-	else {
-		throw new Error("Request failed!");
-	}
-  }
+	let result = await ToggleAPI.startEntry(apiToken, workspaceId);
+	delete CURRENT_ENTRY_CACHE[apiToken];
+	return result;
+}
   
 async function togglStopEntry(apiToken, workspaceId, entryId) {
-	var response = await fetch(
-	  `${togglBaseUrl}/workspaces/${workspaceId}/time_entries/${entryId}/stop`, {
-	  method: 'PATCH',
-	  headers: {
-		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
-	  }
-	})
-	if(response.ok) {
-		return await response.json();
-	}
-	else {
-		throw new Error("Request failed!");
-	}
+	let result = await ToggleAPI.stopEntry(apiToken, workspaceId, entryId);
+	delete CURRENT_ENTRY_CACHE[apiToken];
+	return result;
 }
