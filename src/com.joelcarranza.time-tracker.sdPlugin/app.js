@@ -40,7 +40,7 @@ function formatElapsed(start)
     return Math.floor(seconds/3600) + ':' + leadingZero(Math.floor((seconds  % 3600)/60));
   }
   else if(seconds > 60) {
-    return Math.floor(seconds/60) + 'min';
+    return Math.floor(seconds/60);
   }
   else {
     return '';
@@ -63,6 +63,8 @@ function setDrawnImage(context, drawFunc) {
 	);
 }
 
+
+
 myAction.updateContext = function(context) {
 	if(context in this.visibleContexts)	{
 		let apitoken = this.visibleContexts[context].settings['apitoken']
@@ -72,11 +74,32 @@ myAction.updateContext = function(context) {
 				console.log(responseData);
 				if(responseData) {
 					start = responseData.start;
-					$SD.setTitle(context, formatElapsed(start));
-					setDrawnImage(context, (ctx, width, height) => {
-						ctx.fillStyle = '#ffaa00';
-						ctx.fillRect(0, 0, width, height);
-					})
+//					$SD.setTitle(context, formatElapsed(start));
+					setDrawnImage(context, (ctx, w, h) => {
+						// draw bottom label
+						x = 2
+						y = 2
+					
+						ctx.fillStyle = "rgb(255 255 255)"
+						ctx.font = "24pt monospace";
+						ctx.fillText("Project", x, h);
+					
+						h -= 12
+					
+						ctx.fillStyle  = "rgb(200 0 0)";
+						ctx.beginPath();
+						ctx.arc(w/2, h/2, h/2 - 1, 0, Math.PI * 2, true); // Outer
+						ctx.fill()
+					
+						text = formatElapsed(start)
+						ctx.fillStyle = "rgb(255 255 255)"
+						ctx.font = "64pt monospace";
+						measure = ctx.measureText(text);
+					
+						ctx.fillText(text, 
+									x + (w-measure.width)/2,
+									h - (w-measure.fontBoundingBoxAscent )/2);
+					});
 				}
 				else {
 					$SD.setTitle(context, "");
