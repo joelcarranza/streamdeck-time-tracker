@@ -74,20 +74,25 @@ myAction.updateContext = function(context) {
 				console.log(responseData);
 				if(responseData) {
 					start = responseData.start;
+					project = responseData.project;
 					console.log(responseData);
 //					$SD.setTitle(context, formatElapsed(start));
 					setDrawnImage(context, (ctx, w, h) => {
 						// draw bottom label
 						x = 2
 						y = 2
-					
+
+						
+						ctx.clearRect(0, 0, w, h);
+						
+						let projectText = project ? project.name : '';
 						ctx.fillStyle = "rgb(255 255 255)"
 						ctx.font = "24pt monospace";
-						ctx.fillText("Project", x, h);
+						ctx.fillText(projectText, x, h);
 					
 						h -= 12
 					
-						ctx.fillStyle  = "rgb(200 0 0)";
+						ctx.fillStyle  = project ? project.color : "rgb(200 0 0)";
 						ctx.beginPath();
 						ctx.arc(w/2, h/2, h/2 - 1, 0, Math.PI * 2, true); // Outer
 						ctx.fill()
@@ -127,12 +132,21 @@ myAction.update = function() {
 
 const togglBaseUrl = 'https://api.track.toggl.com/api/v9';
 
+
+CURRENT_ENTRY_CACHE = {};
+
 async function togglGetCurrentEntry(apiToken) {
-	// TODO: eventually do catching here
-	console.log("togglGetCurrentEntry" + apiToken)
 	if(!apiToken) {
 		throw new Exception("No API Token provided");
 	}
+	if(apiToken in CURRENT_ENTRY_CACHE) {
+		let e = CURRENT_ENTRY_CACHE[apiToken];
+		if(e.expires > Date.now()) {
+			console.log("return entry from cache");
+			return e.result;
+		}
+	}
+
 	let response = await fetch(
 	  `${togglBaseUrl}/me/time_entries/current`, {
 	  method: 'GET',
@@ -147,23 +161,42 @@ async function togglGetCurrentEntry(apiToken) {
 			workspace_id  = result.workspace_id;
 			if(project_id) {
 				result.project = await togglGetProject(apiToken, workspace_id, project_id);
-			}
+			}			
 		}
+		CURRENT_ENTRY_CACHE[apiToken] = {result, expires: Date.now() + 15000};
 		return result;
 	}
 	else {
-		throw new Exception("Request failed!");
+		throw new Error("Request failed!");
 	}
 }
 
 
-function togglGetProject(apiToken, workspaceId, projectId) {
-	return fetch(
-	  `${togglBaseUrl}/workspaces/${workspaceId}/projects/${projectId}`, {
-		method: 'GET',
-		headers: {
-		  Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
+PROJECT_CACHE = {};
+
+async function togglGetProject(apiToken, workspaceId, projectId) {
+		let cacheKey = [apiToken, workspaceId, projectId].join(',');
+		if(cacheKey in PROJECT_CACHE) {
+			let e = PROJECT_CACHE[cacheKey];
+			if(e.expires > Date.now()) {
+				console.log("return project from cache");
+				return e.result;
+			}
 		}
-	  });
+
+		let response = await fetch(`${togglBaseUrl}/workspaces/${workspaceId}/projects/${projectId}`, {
+			method: 'GET',
+			headers: {
+			Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
+			}
+		});
+		if(response.ok) {
+			let result = await response.json();
+			PROJECT_CACHE[cacheKey] = {result, expires: Date.now() + 60*60*1000};
+			return result;
+		}
+		else {
+			throw new Error("Request failed!");
+		}
   }
   
