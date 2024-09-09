@@ -29,7 +29,21 @@ myAction.onDidReceiveSettings(({ action, context, device, event, payload }) =>  
 });
 
 myAction.onKeyDown(({ action, context, device, event, payload }) => {
-	console.log("onKeyDown " + this.apitoken);
+	console.log("onKeyDown ");
+	let settings = payload.settings;
+	let apitoken = settings['apitoken'];
+	let workspace = settings['workspace'];
+
+	togglGetCurrentEntry(apitoken).then(responseData => {
+		if(responseData) {
+			togglStopEntry(apitoken, responseData.workspace_id, responseData.id).then(result => {
+				myAction.updateContext(context);
+			})
+		}
+		else {
+			togglStartEntry(apitoken, workspace);
+		}
+	});
 });
 
 function formatElapsed(start)
@@ -141,7 +155,7 @@ CURRENT_ENTRY_CACHE = {};
 
 async function togglGetCurrentEntry(apiToken) {
 	if(!apiToken) {
-		throw new Exception("No API Token provided");
+		throw new Error("No API Token provided");
 	}
 	if(apiToken in CURRENT_ENTRY_CACHE) {
 		let e = CURRENT_ENTRY_CACHE[apiToken];
@@ -204,3 +218,43 @@ async function togglGetProject(apiToken, workspaceId, projectId) {
 		}
   }
   
+
+async function togglStartEntry(apiToken, workspaceId) {
+	var ts = new Date().toISOString();
+	var response = await fetch(
+	  `${togglBaseUrl}/workspaces/${workspaceId}/time_entries`, {
+	  method: 'POST',
+	  headers: {
+		'Content-Type': 'application/json',
+		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
+	  },
+	  body: JSON.stringify({
+		workspace_id: +workspaceId,
+		duration: -1, 
+		start:ts,
+		created_with: 'Stream Deck'
+	  })
+	})
+	if(response.ok) {
+		return await response.json();
+	}
+	else {
+		throw new Error("Request failed!");
+	}
+  }
+  
+async function togglStopEntry(apiToken, workspaceId, entryId) {
+	var response = await fetch(
+	  `${togglBaseUrl}/workspaces/${workspaceId}/time_entries/${entryId}/stop`, {
+	  method: 'PATCH',
+	  headers: {
+		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
+	  }
+	})
+	if(response.ok) {
+		return await response.json();
+	}
+	else {
+		throw new Error("Request failed!");
+	}
+}
