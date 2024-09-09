@@ -74,6 +74,7 @@ myAction.updateContext = function(context) {
 				console.log(responseData);
 				if(responseData) {
 					start = responseData.start;
+					console.log(responseData);
 //					$SD.setTitle(context, formatElapsed(start));
 					setDrawnImage(context, (ctx, w, h) => {
 						// draw bottom label
@@ -145,7 +146,7 @@ async function togglGetCurrentEntry(apiToken) {
 			project_id = result.project_id;
 			workspace_id  = result.workspace_id;
 			if(project_id) {
-				//result.project = await togglGetProject(apiToken, workspace_id, project_id);
+				result.project = await togglGetProject(apiToken, workspace_id, project_id);
 			}
 		}
 		return result;
