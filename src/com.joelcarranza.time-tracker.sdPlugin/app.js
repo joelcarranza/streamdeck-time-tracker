@@ -79,31 +79,35 @@ myAction.updateContext = function(context) {
 //					$SD.setTitle(context, formatElapsed(start));
 					setDrawnImage(context, (ctx, w, h) => {
 						// draw bottom label
-						x = 2
-						y = 2
+						x = 4
+						y = 4
 
 						
 						ctx.clearRect(0, 0, w, h);
 						
-						let projectText = project ? project.name : '';
+						let text = project ? project.name : '';
 						ctx.fillStyle = "rgb(255 255 255)"
-						ctx.font = "24pt monospace";
-						ctx.fillText(projectText, x, h);
+						ctx.font = "9pt verdana";
+
+						let measure = ctx.measureText(text);
+						ctx.fillText(text, 
+							(w-measure.width)/2,
+							h-4);
 					
 						h -= 12
 					
 						ctx.fillStyle  = project ? project.color : "rgb(200 0 0)";
 						ctx.beginPath();
-						ctx.arc(w/2, h/2, h/2 - 1, 0, Math.PI * 2, true); // Outer
+						ctx.arc(w/2, h/2, 24, 0, Math.PI * 2, true); // Outer
 						ctx.fill()
 					
 						text = formatElapsed(start)
 						ctx.fillStyle = "rgb(255 255 255)"
-						ctx.font = "64pt monospace";
+						ctx.font = "24pt verdana bold";
 						measure = ctx.measureText(text);
 					
 						ctx.fillText(text, 
-									x + (w-measure.width)/2,
+									(w-measure.width)/2,
 									h - (w-measure.fontBoundingBoxAscent )/2);
 					});
 				}
