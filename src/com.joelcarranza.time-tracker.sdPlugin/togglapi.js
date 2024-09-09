@@ -94,3 +94,15 @@ ToggleAPI.stopEntry = async function(apiToken, workspaceId, entryId) {
 		throw new Error("Request failed!");
 	}
 }
+
+ToggleAPI.getWorkspaces = async function getWorkspaces(apiToken) {
+	const response = await fetch(
+		`${togglBaseUrl}/workspaces`, {
+		  method: 'GET',
+		  headers: {
+			Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
+		  }
+		})
+	  const data = await response.json()
+	  return data
+}

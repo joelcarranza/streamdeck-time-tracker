@@ -41,7 +41,9 @@ myAction.onKeyDown(({ action, context, device, event, payload }) => {
 			})
 		}
 		else {
-			togglStartEntry(apitoken, workspace);
+			togglStartEntry(apitoken, workspace).then(result => {
+				myAction.updateContext(context);
+			});
 		}
 	});
 });
@@ -57,7 +59,7 @@ function formatElapsed(start)
     return Math.floor(seconds/60);
   }
   else {
-    return '';
+    return '0';
   }
 }
 
@@ -99,7 +101,7 @@ myAction.updateContext = function(context) {
 						
 						ctx.clearRect(0, 0, w, h);
 						
-						let text = project ? project.name : '';
+						let text = project ? project.name : '<None>';
 						ctx.fillStyle = "rgb(255 255 255)"
 						ctx.font = "9pt verdana";
 
