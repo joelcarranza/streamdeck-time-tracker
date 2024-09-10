@@ -33,7 +33,7 @@
 			],
 			"Tooltip": "Displays currently tracked time",
 			"UUID": "com.joelcarranza.time-tracker.action",
-			"PropertyInspectorPath": "actions/template/property-inspector/inspector.html"
+			"PropertyInspectorPath": "property-inspector/inspector.html"
 		}
 	]
 }
