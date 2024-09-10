@@ -165,6 +165,13 @@ async function togglGetCurrentEntry(apiToken) {
 	}
 
 	result = ToggleAPI.getCurrentEntry(apiToken);
+	if(result) {
+		project_id = result.project_id;
+		workspace_id  = result.workspace_id;
+		if(project_id) {
+			result.project = await togglGetProject(apiToken, workspace_id, project_id);
+		}
+	}
 	CURRENT_ENTRY_CACHE[apiToken] = {result, expires: Date.now() + 15000};
 	return result;
 }

@@ -1,108 +1,93 @@
-const togglBaseUrl = 'https://api.track.toggl.com/api/v9';
 
-ToggleAPI = {};
+ToggleAPI = (function() {
+	const URL_BASE = 'https://api.track.toggl.com/api/v9';
 
-ToggleAPI.getCurrentEntry = async function(apiToken) {
-	if(!apiToken) {
-		throw new Error("No API Token provided");
-	}
-	let response = await fetch(
-	  `${togglBaseUrl}/me/time_entries/current`, {
-	  method: 'GET',
-	  headers: {
-		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
-	  }
-	});
-	if(response.ok) {
-		result = await response.json();
-		if(result) {
-			project_id = result.project_id;
-			workspace_id  = result.workspace_id;
-			if(project_id) {
-				result.project = await togglGetProject(apiToken, workspace_id, project_id);
-			}			
+	function authHeaders(apiToken) {
+		if(!apiToken) {
+			throw new Error("No API Token provided");
 		}
-		return result;
-	}
-	else {
-		throw new Error("Request failed!");
-	}
-}
-
-ToggleAPI.getProject = async function (apiToken, workspaceId, projectId) {
-		let cacheKey = [apiToken, workspaceId, projectId].join(',');
-		if(cacheKey in PROJECT_CACHE) {
-			let e = PROJECT_CACHE[cacheKey];
-			if(e.expires > Date.now()) {
-				console.log("return project from cache");
-				return e.result;
-			}
-		}
-
-		let response = await fetch(`${togglBaseUrl}/workspaces/${workspaceId}/projects/${projectId}`, {
-			method: 'GET',
-			headers: {
+		return {
 			Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
-			}
+		};
+	}
+
+	async function getCurrentEntry(apiToken) {
+		let url = `${URL_BASE}/me/time_entries/current`;
+		let response = await fetch(url, {
+		 	headers: authHeaders(apiToken)
 		});
 		if(response.ok) {
-			let result = await response.json();
-			return result;
+			return await response.json();
 		}
 		else {
-			throw new Error("Request failed!");
+			throw new Error(`Request to URL ${url} failed`);
 		}
-  }
-  
-
-ToggleAPI.startEntry = async function(apiToken, workspaceId) {
-	var ts = new Date().toISOString();
-	var response = await fetch(
-	  `${togglBaseUrl}/workspaces/${workspaceId}/time_entries`, {
-	  method: 'POST',
-	  headers: {
-		'Content-Type': 'application/json',
-		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
-	  },
-	  body: JSON.stringify({
-		workspace_id: +workspaceId,
-		duration: -1, 
-		start:ts,
-		created_with: 'Stream Deck'
-	  })
-	})
-	if(response.ok) {
-		return await response.json();
 	}
-	else {
-		throw new Error("Request failed!");
-	}
-  }
-  
-ToggleAPI.stopEntry = async function(apiToken, workspaceId, entryId) {
-	var response = await fetch(
-	  `${togglBaseUrl}/workspaces/${workspaceId}/time_entries/${entryId}/stop`, {
-	  method: 'PATCH',
-	  headers: {
-		Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
+	
+	async function getProject(apiToken, workspaceId, projectId) {
+			let url = `${URL_BASE}/workspaces/${workspaceId}/projects/${projectId}`;
+			let response = await fetch(url, {
+				headers: authHeaders(apiToken)
+			});
+			if(response.ok) {
+				return await response.json();
+			}
+			else {
+				throw new Error(`Request to URL ${url} failed`);
+			}
 	  }
-	})
-	if(response.ok) {
-		return await response.json();
-	}
-	else {
-		throw new Error("Request failed!");
-	}
-}
-
-ToggleAPI.getWorkspaces = async function getWorkspaces(apiToken) {
-	const response = await fetch(
-		`${togglBaseUrl}/workspaces`, {
-		  method: 'GET',
-		  headers: {
-			Authorization: `Basic ${btoa(`${apiToken}:api_token`)}`
-		  }
+	  
+	
+	async function startEntry(apiToken, workspaceId) {
+		let url = `${URL_BASE}/workspaces/${workspaceId}/time_entries`;
+		let ts = new Date().toISOString();
+		let response = await fetch(url, {
+			method: 'POST',
+			headers: authHeaders(apiToken),
+			body: JSON.stringify({
+				workspace_id: +workspaceId,
+				duration: -1, 
+				start:ts,
+				created_with: 'Stream Deck'
+		  	})
 		})
-	  const data = await response.json()
-	  return data
-}
+		if(response.ok) {
+			return await response.json();
+		}
+		else {
+			throw new Error(`Request to URL ${url} failed`);
+		}
+	}
+	  
+	async function stopEntry(apiToken, workspaceId, entryId) {
+		let url = `${URL_BASE}/workspaces/${workspaceId}/time_entries/${entryId}/stop`;
+		let response = await fetch(url, {
+			method: 'PATCH',
+			headers: authHeaders(apiToken)
+		})
+		if(response.ok) {
+			return await response.json();
+		}
+		else {
+			throw new Error(`Request to URL ${url} failed`);
+		}
+	}
+	
+	async function getWorkspaces(apiToken) {
+		let url = `${URL_BASE}/workspaces`;
+		let response = await fetch(
+			url, {
+				headers: authHeaders(apiToken)
+			})
+		if(response.ok) {
+			return await response.json();
+		}
+		else {
+			throw new Error(`Request to URL ${url} failed`);
+		}
+	}
+	
+	return {getCurrentEntry, getProject, startEntry, stopEntry, getWorkspaces};
+
+})();
+

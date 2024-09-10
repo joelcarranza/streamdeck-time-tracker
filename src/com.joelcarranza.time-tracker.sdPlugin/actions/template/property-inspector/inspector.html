@@ -45,6 +45,9 @@
     <script src="inspector.js"></script>
 
     <script>
+        // XXX: workspaces only updated whenever apitoken changes
+        // not reloaded as needed
+        
         function apiTokenChanged() {
             updateWorkspaces(document.getElementById('apitoken').value);
         }
