@@ -43,9 +43,11 @@ function updateWorkspaces (apiToken, workspaceId) {
                 }
                 selectEl.append(optionEl)
             });
+        }).catch((error) => {
+            document.getElementById('workspace').innerHTML = '';
         });
     }
     else {
-        document.getElementById('workspace').innerHTML = ''
+        document.getElementById('workspace').innerHTML = '';
     }
 }

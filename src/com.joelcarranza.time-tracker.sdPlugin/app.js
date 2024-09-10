@@ -195,6 +195,10 @@ async function togglGetProject(apiToken, workspaceId, projectId) {
   
 
 async function togglStartEntry(apiToken, workspaceId) {
+	if(!workspaceId) {
+		var workspaces = await ToggleAPI.getWorkspaces(apiToken);
+		workspaceId = workspaces[0].id;
+	}
 	let result = await ToggleAPI.startEntry(apiToken, workspaceId);
 	delete CURRENT_ENTRY_CACHE[apiToken];
 	return result;
