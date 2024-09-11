@@ -164,12 +164,15 @@ async function togglGetCurrentEntry(apiToken) {
 		}
 	}
 
-	result = ToggleAPI.getCurrentEntry(apiToken);
+	let result = await ToggleAPI.getCurrentEntry(apiToken);
 	if(result) {
-		project_id = result.project_id;
-		workspace_id  = result.workspace_id;
+		let project_id = result.project_id;
+		let workspace_id  = result.workspace_id;
 		if(project_id) {
 			result.project = await togglGetProject(apiToken, workspace_id, project_id);
+		}
+		else {
+			result.project = null;
 		}
 	}
 	CURRENT_ENTRY_CACHE[apiToken] = {result, expires: Date.now() + 15000};
@@ -188,7 +191,7 @@ async function togglGetProject(apiToken, workspaceId, projectId) {
 				return e.result;
 			}
 		}
-		let result = ToggleAPI.getProject(apiToken, workspaceId, projectId);
+		let result = await ToggleAPI.getProject(apiToken, workspaceId, projectId);
 		PROJECT_CACHE[cacheKey] = {result, expires: Date.now() + 60*60*1000};
 		return result;
   }
