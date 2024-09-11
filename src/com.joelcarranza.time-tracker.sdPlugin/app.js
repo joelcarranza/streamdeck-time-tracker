@@ -102,7 +102,7 @@ myAction.updateContext = function(context) {
 						ctx.clearRect(0, 0, w, h);
 						
 						// draw project name at bottom
-
+						
 						let text = project ? project.name : 'No Project';
 						ctx.fillStyle = "rgb(255 255 255)"
 						ctx.font = '9pt ' + fontFamily;
@@ -116,10 +116,19 @@ myAction.updateContext = function(context) {
 
 						// draw circle with project color
 
-						ctx.fillStyle  = project ? project.color : "#e47bd7";
-						ctx.beginPath();
-						ctx.arc(w/2, h/2, 24, 0, Math.PI * 2, true); // Outer
-						ctx.fill()
+						if(project) {
+							ctx.fillStyle  = project.color;
+							ctx.beginPath();
+							ctx.arc(w/2, h/2, 24, 0, Math.PI * 2, true); // Outer
+							ctx.fill()
+						}
+						else {
+							ctx.strokeStyle  = "#2d2d2d";
+							ctx.lineWidth = 4;
+							ctx.beginPath();
+							ctx.arc(w/2, h/2, 24, 0, Math.PI * 2, true); // Outer
+							ctx.stroke()							
+						}
 						
 						// draw time elaped in center 
 						text = formatElapsed(start)
