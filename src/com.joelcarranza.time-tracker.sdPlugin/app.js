@@ -92,18 +92,20 @@ myAction.updateContext = function(context) {
 					start = responseData.start;
 					project = responseData.project;
 					console.log(responseData);
-//					$SD.setTitle(context, formatElapsed(start));
 					setDrawnImage(context, (ctx, w, h) => {
 						// draw bottom label
 						x = 4
 						y = 4
 
+						let fontFamily = 'Tahoma,Verdana,Segoe,sans-serif';
 						
 						ctx.clearRect(0, 0, w, h);
 						
-						let text = project ? project.name : '<None>';
+						// draw project name at bottom
+
+						let text = project ? project.name : 'No Project';
 						ctx.fillStyle = "rgb(255 255 255)"
-						ctx.font = "9pt verdana";
+						ctx.font = '9pt ' + fontFamily;
 
 						let measure = ctx.measureText(text);
 						ctx.fillText(text, 
@@ -111,15 +113,18 @@ myAction.updateContext = function(context) {
 							h-4);
 					
 						h -= 12
-					
-						ctx.fillStyle  = project ? project.color : "rgb(200 0 0)";
+
+						// draw circle with project color
+
+						ctx.fillStyle  = project ? project.color : "#e47bd7";
 						ctx.beginPath();
 						ctx.arc(w/2, h/2, 24, 0, Math.PI * 2, true); // Outer
 						ctx.fill()
-					
+						
+						// draw time elaped in center 
 						text = formatElapsed(start)
 						ctx.fillStyle = "rgb(255 255 255)"
-						ctx.font = "24pt verdana bold";
+						ctx.font = 'bold 24pt '  + fontFamily;
 						measure = ctx.measureText(text);
 					
 						ctx.fillText(text, 
@@ -128,12 +133,9 @@ myAction.updateContext = function(context) {
 					});
 				}
 				else {
-					$SD.setTitle(context, "");
 					result = $SD.setImage(
 						context,
-						null // use default image
-						// must be image url
-						//"data:image/svg+xml;charset=utf8,<svg height=\"100\" width=\"100\"><circle cx=\"50\" cy=\"50\" r=\"40\" stroke=\"black\" stroke-width=\"3\" fill=\"red\" /></svg>",
+						null
 					);
 				}
 			}).catch((e) => {
