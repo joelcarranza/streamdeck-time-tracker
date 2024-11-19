@@ -17,11 +17,14 @@
         <form id="property-inspector">
             <div class="sdpi-item">
                 <div data-localize class="sdpi-item-label" title="Todoist API Token">Todoist API Token</div>
-                <input data-localize class="sdpi-item-value" id="apitoken" name="apitoken" type="text" value="" placeholder="Retrieve from Todoist" onchange="apiTokenChanged()"/>
+                <input data-localize class="sdpi-item-value" id="apitoken" name="apitoken" type="text" value="" placeholder="Retrieve from Todoist" onchange="apiTokenChanged()" required />
             </div>
             <div class="sdpi-item">
                 <div data-localize class="sdpi-item-label" title="Workspace">Workspace</div>
                 <select class="sdpi-item-value select" id="workspace" name="workspace" required></select>
+            </div>
+            <div class="sdpi-item">
+                <details class="message caution" id="no-workspace-message"><summary>Unable to load workspace with given API key</summary></details>
             </div>
         </form>
     </div>

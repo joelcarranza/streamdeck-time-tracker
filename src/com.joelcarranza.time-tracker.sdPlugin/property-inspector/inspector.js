@@ -43,11 +43,18 @@ function updateWorkspaces (apiToken, workspaceId) {
                 }
                 selectEl.append(optionEl)
             });
+            const form = document.querySelector('#property-inspector');
+            const value = Utils.getFormValue(form);
+            $PI.setSettings(value);
+
+            document.getElementById('no-workspace-message').style.display = 'none';
         }).catch((error) => {
+            document.getElementById('no-workspace-message').style.display = 'block';
             document.getElementById('workspace').innerHTML = '';
         });
     }
     else {
+        document.getElementById('no-workspace-message').style.display = 'block';
         document.getElementById('workspace').innerHTML = '';
     }
 }
