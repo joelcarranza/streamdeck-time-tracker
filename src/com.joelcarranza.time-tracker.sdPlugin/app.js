@@ -1,34 +1,34 @@
 /// <reference path="libs/js/action.js" />
 /// <reference path="libs/js/stream-deck.js" />
 
-const myAction = new Action('com.joelcarranza.time-tracker.action');
-myAction.visibleContexts = {}
+const timeTrackerAction = new Action('com.joelcarranza.time-tracker.action');
+timeTrackerAction.visibleContexts = {}
 
 const UPDATE_INTERVAL = 15 * 1000;
 
 $SD.onConnected(({ actionInfo, appInfo, connection, messageType, port, uuid }) => {
 	console.log('Stream Deck connected!');
-	setInterval(() => myAction.update(), UPDATE_INTERVAL);
+	setInterval(() => timeTrackerAction.update(), UPDATE_INTERVAL);
 });
 
-myAction.onWillAppear(({ action, context, device, event, payload }) =>  {
+timeTrackerAction.onWillAppear(({ action, context, device, event, payload }) =>  {
 	let settings = payload.settings;
-	myAction.visibleContexts[context] = {settings};
-	myAction.updateContext(context);
+	timeTrackerAction.visibleContexts[context] = {settings};
+	timeTrackerAction.updateContext(context);
 });
 
-myAction.onWillDisappear(({ action, context, device, event, payload }) =>  {
-	delete myAction.visibleContexts[context];
+timeTrackerAction.onWillDisappear(({ action, context, device, event, payload }) =>  {
+	delete timeTrackerAction.visibleContexts[context];
 });
 
-myAction.onDidReceiveSettings(({ action, context, device, event, payload }) =>  {
+timeTrackerAction.onDidReceiveSettings(({ action, context, device, event, payload }) =>  {
 	let settings = payload.settings;
-	if(context in myAction.visibleContexts) {
-		myAction.visibleContexts[context].settings = settings;
+	if(context in timeTrackerAction.visibleContexts) {
+		timeTrackerAction.visibleContexts[context].settings = settings;
 	}
 });
 
-myAction.onKeyDown(({ action, context, device, event, payload }) => {
+timeTrackerAction.onKeyDown(({ action, context, device, event, payload }) => {
 	console.log("onKeyDown ");
 	let settings = payload.settings;
 	let apitoken = settings['apitoken'];
@@ -37,12 +37,12 @@ myAction.onKeyDown(({ action, context, device, event, payload }) => {
 	togglGetCurrentEntry(apitoken).then(responseData => {
 		if(responseData) {
 			togglStopEntry(apitoken, responseData.workspace_id, responseData.id).then(result => {
-				myAction.updateContext(context);
+				timeTrackerAction.updateContext(context);
 			})
 		}
 		else {
 			togglStartEntry(apitoken, workspace).then(result => {
-				myAction.updateContext(context);
+				timeTrackerAction.updateContext(context);
 			});
 		}
 	});
@@ -81,13 +81,12 @@ function setDrawnImage(context, drawFunc) {
 
 
 
-myAction.updateContext = function(context) {
+timeTrackerAction.updateContext = function(context) {
 	if(context in this.visibleContexts)	{
 		let apitoken = this.visibleContexts[context].settings['apitoken']
 		if(apitoken) {
 			togglGetCurrentEntry(apitoken).then(responseData => {
-				console.log("RESULT!");
-				console.log(responseData);
+				console.log("RESULT!", apitoken, responseData);
 				if(responseData) {
 					start = responseData.start;
 					project = responseData.project;
@@ -154,11 +153,27 @@ myAction.updateContext = function(context) {
 	}
 }
 
-myAction.update = function() {
+timeTrackerAction.update = function() {
 	for (let context of Object.keys(this.visibleContexts)) {
 		this.updateContext(context);
 	}
 }
+
+
+const startTimerAction = new Action('com.joelcarranza.start-timer.action');
+
+startTimerAction.onKeyDown(({ action, context, device, event, payload }) => {
+	console.log("onKeyDown ");
+	let settings = payload.settings;
+	let apitoken = settings['apitoken'];
+	let workspace = settings['workspace'];
+	let project = settings['project'];
+	let description = settings['description'];
+
+	togglStartEntry(apitoken, workspace, project, description).then(result => {
+		timeTrackerAction.update()
+	});
+});
 
 
 CURRENT_ENTRY_CACHE = {};
@@ -208,12 +223,15 @@ async function togglGetProject(apiToken, workspaceId, projectId) {
   }
   
 
-async function togglStartEntry(apiToken, workspaceId) {
+async function togglStartEntry(apiToken, workspaceId, project=null, description=null) {
 	if(!workspaceId) {
 		var workspaces = await ToggleAPI.getWorkspaces(apiToken);
 		workspaceId = workspaces[0].id;
 	}
-	let result = await ToggleAPI.startEntry(apiToken, workspaceId);
+	if(!project) {
+		project = null;
+	}
+	let result = await ToggleAPI.startEntry(apiToken, workspaceId, project, description);
 	delete CURRENT_ENTRY_CACHE[apiToken];
 	return result;
 }

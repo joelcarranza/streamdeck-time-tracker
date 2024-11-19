@@ -12,6 +12,7 @@ ToggleAPI = (function() {
 	}
 
 	async function getCurrentEntry(apiToken) {
+		console.log("getCurrentEntry with API token", apiToken);
 		let url = `${URL_BASE}/me/time_entries/current`;
 		let response = await fetch(url, {
 		 	headers: authHeaders(apiToken)
@@ -36,21 +37,44 @@ ToggleAPI = (function() {
 				throw new Error(`Request to URL ${url} failed`);
 			}
 	  }
+
+
+	  async function getProjects(apiToken, workspaceId) {
+		let url = `${URL_BASE}/workspaces/${workspaceId}/projects?sort_pinned=true&active=true`;
+		let response = await fetch(url, {
+			headers: authHeaders(apiToken)
+		});
+		if(response.ok) {
+			return await response.json();
+		}
+		else {
+			throw new Error(`Request to URL ${url} failed`);
+		}
+  }
 	  
 	
-	async function startEntry(apiToken, workspaceId) {
+	async function startEntry(apiToken, workspaceId, projectId=null, description=null) {
 		let url = `${URL_BASE}/workspaces/${workspaceId}/time_entries`;
 		let ts = new Date().toISOString();
+
+		let requestBody = {
+			workspace_id: +workspaceId,
+			duration: -1,
+			start: ts,
+			created_with: 'Stream Deck'
+		};
+		if (projectId !== null) {
+			requestBody.project_id = +projectId;
+		}
+		if(description) {
+			requestBody.description = description;
+		}
+
 		let response = await fetch(url, {
 			method: 'POST',
 			headers: authHeaders(apiToken),
-			body: JSON.stringify({
-				workspace_id: +workspaceId,
-				duration: -1, 
-				start:ts,
-				created_with: 'Stream Deck'
-		  	})
-		})
+			body: JSON.stringify(requestBody)
+		});
 		if(response.ok) {
 			return await response.json();
 		}
@@ -87,7 +111,7 @@ ToggleAPI = (function() {
 		}
 	}
 	
-	return {getCurrentEntry, getProject, startEntry, stopEntry, getWorkspaces};
+	return {getCurrentEntry, getProject, startEntry, stopEntry, getWorkspaces, getProjects};
 
 })();
 

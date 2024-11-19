@@ -33,7 +33,19 @@
 			],
 			"Tooltip": "Displays currently tracked time",
 			"UUID": "com.joelcarranza.time-tracker.action",
-			"PropertyInspectorPath": "property-inspector/inspector.html"
+			"PropertyInspectorPath": "property-inspector/tracker.html"
+		},
+		{
+			"Icon": "images/play-circle-outline",
+			"Name": "Start Timer",
+			"States": [
+				{
+					"Image": "images/play-circle-outline"
+				}
+			],
+			"Tooltip": "Start tracking tracked time",
+			"UUID": "com.joelcarranza.start-timer.action",
+			"PropertyInspectorPath": "property-inspector/start.html"
 		}
 	]
 }
