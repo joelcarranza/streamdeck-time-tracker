@@ -1,7 +1,7 @@
 /// <reference path="libs/js/action.js" />
 /// <reference path="libs/js/stream-deck.js" />
 
-const timeTrackerAction = new Action('com.joelcarranza.time-tracker.action');
+const timeTrackerAction = new Action('com.joelcarranza.time-tracker.track-action');
 timeTrackerAction.visibleContexts = {}
 
 const UPDATE_INTERVAL = 15 * 1000;
@@ -160,7 +160,7 @@ timeTrackerAction.update = function() {
 }
 
 
-const startTimerAction = new Action('com.joelcarranza.start-timer.action');
+const startTimerAction = new Action('com.joelcarranza.time-tracker.start-action');
 
 startTimerAction.onKeyDown(({ action, context, device, event, payload }) => {
 	console.log("onKeyDown ");

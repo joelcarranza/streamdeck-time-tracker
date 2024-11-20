@@ -8,4 +8,14 @@ This provides an alternative to [blueshiftone/streamdeck-toggl)](https://github.
 
 ## Building
 
-Currently using [just](https://github.com/casey/just). This is not yet completely fleshed out
+You will node/npm installed as well as [just](https://github.com/casey/just). Then you can setup the [Elgato CLI](https://www.npmjs.com/package/@elgato/cli) with
+
+    just setup
+
+and then to install locally:
+
+    just link
+
+to build a package:
+
+    just build

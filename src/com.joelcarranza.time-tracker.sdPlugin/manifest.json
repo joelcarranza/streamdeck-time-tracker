@@ -1,14 +1,15 @@
 {
 	"SDKVersion": 2,
-	"Author": "Elgato Systems",
+	"UUID": "com.joelcarranza.time-tracker",
+	"Author": "Joel Carranza",
 	"CodePath": "app.html",
 	"Description": "Time Tracker using Toggl",
 	"Name": "Time Tracker",
-	"Icon": "actions/template/assets/action",
-	"URL": "https://www.elgato.com/en/gaming/stream-deck",
-	"Version": "1.0.2",
+	"Icon": "images/play-circle-outline",
+	"URL": "http://joelcarranza.com",
+	"Version": "0.0.3.0",
 	"Software": {
-		"MinimumVersion": "5.0"
+		"MinimumVersion": "6.4"
 	},
 	"OS": [
 		{
@@ -32,7 +33,7 @@
 				}
 			],
 			"Tooltip": "Displays currently tracked time",
-			"UUID": "com.joelcarranza.time-tracker.action",
+			"UUID": "com.joelcarranza.time-tracker.track-action",
 			"PropertyInspectorPath": "property-inspector/tracker.html"
 		},
 		{
@@ -44,7 +45,7 @@
 				}
 			],
 			"Tooltip": "Start tracking tracked time",
-			"UUID": "com.joelcarranza.start-timer.action",
+			"UUID": "com.joelcarranza.time-tracker.start-action",
 			"PropertyInspectorPath": "property-inspector/start.html"
 		}
 	]

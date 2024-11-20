@@ -8,3 +8,5 @@ package-lock.json
 .history
 __exclude
 .editorconfig
+node_modules
+com.joelcarranza.time-tracker.streamDeckPlugin
